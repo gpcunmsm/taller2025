@@ -1,0 +1,313 @@
+\documentclass[]{beamer}
+%\documentclass[notes]{beamer}       % print frame + notes
+%\documentclass[notes=only]{beamer}   % only notes
+%\documentclass{beamer}              % only frames
+%\documentclass[handout]{beamer}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{algorithm2e}
+
+\usetheme{Dresden}%%%%% developer's preference - may change based on preferences
+
+%%%%%% UMass official color: https://www.umass.edu/brand/elements/color
+\definecolor{UMassAmherst}{rgb}{0.533 0.11 0.11}
+\usecolortheme[named=UMassAmherst]{structure}
+
+\title{Grafos\\B\'usqueda}
+\author{MSc Edson Ticona Zegarra}
+\institute{Taller avanzado 2025}
+\date{}
+
+%%%%%% obtained from: https://www.umass.edu/brand/elements/wordmarks-seal-and-spirit-marks
+%%%%%% logos of other departments can also be obtained from the above link. Otherwise, consult your department website.
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Contenido}
+\tableofcontents
+\end{frame}
+
+\section{Introducci\'on}
+\begin{frame}{Contenido}
+\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}{Grafo}
+  \begin{itemize}
+    \item Un grafo es un par $G=(V,E)$ de conjuntos tal que $E \subset V^2$
+      \pause
+    \item As\'i, todo elemento de $E$ es un subconjunto de 2 elementos de $V$. Los elementos de $V$ son los v\'ertices y los elementos de $E$ son sus aristas.
+      \pause
+    \item Los v\'ertices de $G$ son denotados por $V(G)$ y sus aristas por $E(G)$
+      \pause
+    \item Un v\'ertice $v$ es incidente con una arista $e$ si $v \in e$
+      \pause
+    \item El conjunto de v\'ertices adyacentes a $v$ se denota por $E(v)$
+      \pause
+    \item El grado $d_G(v)$ o $d(v)$ de un v\'ertice es el n\'umero $|E(v)|$ de aristas en $v$ 
+      \pause
+    \item Dos v\'ertices $u, v$ son adyacentes si existe una arista $e = \{u,v\}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Caminos y ciclos}
+  \begin{itemize}
+    \item Un \textit{camino} es un grafo no vacio $P=(V,E)$, tal que $V=\{x_0, x_1, ..., x_k \}$ y $E = \{x_0x_1, x_1x_2, ..., x_{k-1}x_k \}$
+      \pause
+    \item Donde todo $x_i$ es diferente. El n\'umero de aristas de un camino es su tama\~no o longitud
+      \pause
+    \item Si $P = x_0, ..., x_{k-1}$ es un camino y $k\geq 3$, entonce el grafo $C = P + x_{k-1}x_0$ es llamado de \textit{ciclo}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Conectividad}
+  \begin{itemize}
+    \item Se dice que un grafo $G$ est\'a \textit{conectado} si existe un camino entre cualquier par de v\'ertices
+      \pause
+    \item Un subgrafo maximal conectado de G es llamado de \textit{componente} de G
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\'Arboles y Florestas}
+  \begin{itemize}
+    \item Un grafo ac\'iclico es llamado de \textit{floresta}
+      \pause
+    \item Un floresta conectada es llamada de \textit{\'arbol}
+      \pause
+    \item Es decir, una floresta es un grafo cuyos componentes son \'arboles.
+      \pause
+    \item Los v\'ertices de grado 1 de un \'arbol son \textit{hojas (leaves)}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\'Arboles y Florestas: definiciones}
+  \begin{itemize}
+    \item Todo par de v\'ertices de un \'arbol $T$ est\'a conectado por un camino \'unico 
+      \pause
+    \item T est\'a minimamente conectado, es decir, $T$ est\'a conectado pero $T-e$ esta desconectado para cualquier $e\in T$
+      \pause
+    \item T is maximalmente ac\'iclico, es decir, $T$ \textbf{no} tiene ciclos pero $T + xy$ tiene ciclos para cualquier par de v\'ertices no adyacentes $x, y \in T$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\'Arboles y Florestas: definiciones}
+  \begin{itemize}
+    \item Sea $T$ un \'arbol enraizado en $r$ y sea $x$ un v\'ertice cualquier. Se llama de \textit{ancestro} a todo v\'ertice $y$ tal que $y$ se encuentra en el camino entre $r$ y $x$
+      \pause
+    \item As\'i mismo, se llama a $x$ de \textit{decendiente} de $y$
+  \end{itemize}
+\end{frame}
+
+\section{Representaci\'on de grafos}
+\begin{frame}{Representaci\'on de grafos}
+  \begin{itemize}
+    \item Matriz de adyacencia: \texttt{int AM[n][n]}
+      \pause
+    \item Lista de adyacencia: \texttt{vector<vector<pair<int,int>> al}. Cada par guarda el \'indice y el peso de la arista
+      \pause
+    \item Lista de aristas: \texttt{vector<tuple<int, int, in>> el}. Cada tupla guarda el peso, y las aristas
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Grafos impl\'icitos}
+  \begin{itemize}
+    \item Algunos grafos no son almacenados directamene, sino que son generados expl\'icitamente en alguna operaci\'on
+      \pause
+    \item Estos grafos se conocen como grafos \textit{impl\'icitos}
+      \pause
+    \item Por ejemplo, navegar una grilla 2D, un tablero de ajedrez, etc
+  \end{itemize}
+\end{frame}
+
+\section{B\'usqueda en grafos}
+\subsection{BFS}
+\begin{frame}{Breadth First Search: B\'usqueda en amplitud}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$G$ es el grafo y $x$ el v\'ertice buscado.}
+    %\Output{$0$ si $x \in V$, $1$ caso contrario}
+    %\BlankLine
+    {$ toVisit.push(u) $} \tcp*{$toVisit$ es una cola, nodo $u$ arbitrario}
+    \While{$ !toVisit.empty() $}
+    {
+      $u = toVisit.front() $ \;
+      \For{$v \in E(u)$}
+      {
+        % \tcc{$Adj(u)$ adyacentes a $u$}
+        % \tcc{colorear los v\'ertices}
+        \If{$ !visited(v) $}
+        {
+          {$ toVisit.push(v)  $} \;
+          { dist[v] = dist [u] + 1 } \;
+          { parent[v] = $u$ } \;
+          { mark $u$ as visited } \;
+        }
+      }
+      { $toVisit.pop()$ }
+    }
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Breadth First Search: B\'usqueda en amplitud}
+  \begin{itemize}
+    \item La complejidad temporal es $O(|V| + |E|)$
+      \pause
+    \item La complejidad espacial es $O(|V|)$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Caminos m\'inimos}
+  \begin{itemize}
+    \item Para grafos sin pesos, BFS encuentra la distancia m\'inima $\delta(s, v)$ entre $s$ y $v$, definiendo la distancia como el tama\~no del camino entre $s$ y $v$, $\forall v \in V(G)$
+      \pause
+    \item En el seudoc\'odigo, $\delta(s, u)$ ser\'a $dist[u]$ donde $s$ es el v\'ertice de inicio
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Breadth-first Tree}
+  \begin{itemize}
+    \item El \'orden de visita de los v\'ertices define un \textit{breadth-first tree}. 
+      \pause
+    \item Definimos el breadth-first tree como $G_{\pi} = (V_{\pi}, E_{\pi})$ tal que $V_{\pi} = \{ v\in V : v.parent \neq NIL \} \cup \{s\}$ y $E_{\pi} = \{ (v.parent, v) : v\in V_{\pi} - \{s\} \}$
+      \pause
+    \item La estructura \textit{parent} contiene el breadth-first tree enraizado en $s$
+      \pause
+    \item $G_{\pi}$ consiste de los v\'ertices alcanzables desde $s$ y a su vez contiene un camino \'unico de $s$ a $v$, siendo el camino m\'inimo
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Breadth-first Tree: Imprimir camino}
+  \begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{$G, s, v$ : G grafo, camino de $s$ a $v$}
+    \If{ $ v == s $ }
+    {
+      { print $s$ }
+    } \Else {
+      \If{ $v.parent == NIL $ }
+      {
+        { print "no path" }
+      } \Else {
+        { PrintPath($G, s, v.parent$) } \\
+        { print $v$ }
+      }
+    }
+  \end{algorithm}
+\end{frame}
+
+\subsection{DFS}
+\begin{frame}{Depth First Search: B\'usqueda en profundidad}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$G$ es el grafo y $x$ el v\'ertice buscado.}
+    %\Output{$0$ si $x \in V$, $1$ caso contrario}
+    %\BlankLine
+    {$ toVisit.push(u) $} \tcp*{$toVisit$ es una pila y se comienza en un v\'ertice arbitrario $u$}
+    \While{$ !toVisit.empty() $}
+    {
+      $u = toVisit.front() $
+      \tcc{$Adj(u)$ adyacentes a $u$}
+      \For{$v \in Adj(u)$}
+      {
+        \tcc{colorear los v\'ertices}
+        \If{$ !visited(v) $}
+        {
+          {$ toVisit.push(v)  $} \;
+          { parent[v] = $u$ } \;
+          { mark $u$ as visited } \;
+        }
+      }
+      { $toVisit.pop()$ }
+    }
+  \end{algorithm}
+\end{frame}
+
+
+\begin{frame}{Depth First Search (DFS): B\'usqueda en profundidad}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$A$ es un conjunto de $n$ n\'umeros y $x$ es el n\'umero buscado.}
+    %\Output{$0$ si $x \in A$, $1$ caso contrario}
+    %\BlankLine
+    mark $u$ as visited \\
+    $u.d \gets time++$ \\
+    \For{$v \in Adj(u)$}
+    {
+      \If{$ !visited(v) $}
+      {
+        $ parent[v] = u $ \\
+        $ DFS(v) $
+      }
+    }
+    $u.f \gets ++time$ \\
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Depth First Search: B\'usqueda en amplitud}
+  \begin{itemize}
+    \item $u.d$ es el tiempo de \textit{discovery}
+      \pause
+    \item $u.f$ es el tiempo de \textit{finalizaci\'on}
+      \pause
+    \item La complejidad temporal es $O(|V| + |E|)$
+      \pause
+    \item La complejidad espacial es $O(|V|)$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Depth First Search (DFS): Clasificaci\'on de aristas}
+  \begin{itemize}
+    \item \textbf{Tree edges}: aristas en el grafo $G_{\pi}$, siendo $G_{\pi}$ el \textit{depth-first tree}
+      \pause
+    \item \textbf{Back edges}: aristas conectando un v\'ertice $u$ a un ancestro $v$ en un \textit{depth-first tree}
+      \pause
+    \item \textbf{Forward edges}: aristas conectando un v\'ertice $u$ a un decendiente $v$ en un \textit{depth-first tree}
+      \pause
+    \item \textbf{Cross edges}: el resto de aristas
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Orden topol\'ogico}
+  \begin{itemize}
+    \item Un ordenamiento topol\'ogico se define para un grafo dirigido ac\'iclico (DAG en ingl\'es)
+      \pause
+    \item Los v\'ertices aparecen de manera ordenada
+  \end{itemize}
+\end{frame}
+
+%\begin{frame}{Orden topol\'ogico}
+%  \begin{algorithm}[H]
+%    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+%    %\Input{$G$ es el grafo y $x$ el v\'ertice buscado.}
+%    %\Output{$0$ si $x \in V$, $1$ caso contrario}
+%    %\BlankLine
+%    {$ toVisit.push(u) $} \tcp*{$toVisit$ es una cola, nodo $u$ arbitrario}
+%    \While{$ !toVisit.empty() $}
+%    {
+%      $u = toVisit.front() $ \;
+%      \For{$v \in E(u)$}
+%      {
+%        % \tcc{$Adj(u)$ adyacentes a $u$}
+%        % \tcc{colorear los v\'ertices}
+%        \If{$ !visited(v) $}
+%        {
+%          {$ toVisit.push(v)  $} \;
+%          { dist[v] = dist [u] + 1 } \;
+%          { parent[v] = $u$ } \;
+%          { mark $u$ as visited } \;
+%        }
+%      }
+%      { $toVisit.pop()$ }
+%    }
+%  \end{algorithm}
+%\end{frame}
+
+%\begin{frame}{Componentes fuertemente conectados}
+%  \begin{itemize}
+%    \item TODO
+%  \end{itemize}
+%\end{frame}
+
+\end{document}
