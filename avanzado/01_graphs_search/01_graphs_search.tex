@@ -273,41 +273,79 @@
   \begin{itemize}
     \item Un ordenamiento topol\'ogico se define para un grafo dirigido ac\'iclico (DAG en ingl\'es)
       \pause
-    \item Los v\'ertices aparecen de manera ordenada
+    \item Es un ordenamiento lineal de los v\'ertices tal que $u$ aparece antes de $v$ si existe una arista dirigida $(u,v)$. 
+      \pause
+    \item Podemos usar el DFS para hallar los tiempos de finalizaci\'on y usarlos de referencia para el \'orden
   \end{itemize}
 \end{frame}
 
-%\begin{frame}{Orden topol\'ogico}
-%  \begin{algorithm}[H]
-%    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
-%    %\Input{$G$ es el grafo y $x$ el v\'ertice buscado.}
-%    %\Output{$0$ si $x \in V$, $1$ caso contrario}
-%    %\BlankLine
-%    {$ toVisit.push(u) $} \tcp*{$toVisit$ es una cola, nodo $u$ arbitrario}
-%    \While{$ !toVisit.empty() $}
-%    {
-%      $u = toVisit.front() $ \;
-%      \For{$v \in E(u)$}
-%      {
-%        % \tcc{$Adj(u)$ adyacentes a $u$}
-%        % \tcc{colorear los v\'ertices}
-%        \If{$ !visited(v) $}
-%        {
-%          {$ toVisit.push(v)  $} \;
-%          { dist[v] = dist [u] + 1 } \;
-%          { parent[v] = $u$ } \;
-%          { mark $u$ as visited } \;
-%        }
-%      }
-%      { $toVisit.pop()$ }
-%    }
-%  \end{algorithm}
-%\end{frame}
+\begin{frame}{Ordenamiento topol\'ogico}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$G$ es el grafo y $x$ el v\'ertice buscado.}
+    %\Output{$0$ si $x \in V$, $1$ caso contrario}
+    %\BlankLine
+    \textsc{$DFS(G)$} \\
+    \textsc{Sort} en base a u.f
+  \end{algorithm}
+\end{frame}
 
-%\begin{frame}{Componentes fuertemente conectados}
-%  \begin{itemize}
-%    \item TODO
-%  \end{itemize}
-%\end{frame}
+\begin{frame}{Ordenamiento topol\'ogico: Algoritmo de Kahn}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$G$ es el grafo y $x$ el v\'ertice buscado.}
+    %\Output{$0$ si $x \in V$, $1$ caso contrario}
+    %\BlankLine
+    \For { $u \in V(G)$ }
+    {
+      \If { $d(u) == 0$ }
+      {
+        {$ toVisit.push(u) $} \tcp*{$toVisit$ es una pila}
+      }
+    }
+
+    \While { $! toVisit.empty() $ }
+    {
+      $ u \gets toVisit.pop() $
+      \For{ $v \in E(u) $ }
+      {
+        { $d(v) \gets d(v)-1 $}
+        \If{ $d(v) > 0 $ } 
+        {
+          continue
+        }
+        $ toVisit.push(v) $
+      }
+    }
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Componentes conectados}
+  \begin{itemize}
+    \item Podemos utilizar el DFS o BFS para hallar los compoenentes conectados
+      \pause
+    \item Ambos van a recorrer cada componente por cada llamada
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Verificar grafos bipartitos}
+  \begin{itemize}
+    \item Se dice que un grafo $G=(V,E)$, si $V$ admite una partici\'on en dos tal que toda arista tenga un extremo en cada partici\'on. 
+      \pause
+    \item En general se dice que un grafo es $r$-partito si admite $r$ particiones tal que toda arista tenga un extremo en alguna partici\'on
+      \pause
+    \item V\'ertices en la misma partici\'on no pueden ser adyacentes
+      \pause
+    \item Podemos usar BFS o DFS para ello, coloreando los v\'ertices de manera alternada
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Verificar ciclos}
+  \begin{itemize}
+    \item Podemos utilizar un DFS para verificar existencia de ciclos
+      \pause
+    \item Si se encuentra un back edge es una prueba de que existe un ciclo
+  \end{itemize}
+\end{frame}
 
 \end{document}
