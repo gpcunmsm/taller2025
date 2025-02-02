@@ -300,16 +300,16 @@
     {
       \If { $d(u) == 0$ }
       {
-        {$ toVisit.push(u) $} \tcp*{$toVisit$ es una pila}
+        {$ toVisit.push(u) $} \tcp*{$toVisit$ es una cola}
       }
     }
 
     \While { $! toVisit.empty() $ }
     {
-      $ u \gets toVisit.pop() $
+      $ u \gets toVisit.pop() $ \\
       \For{ $v \in E(u) $ }
       {
-        { $d(v) \gets d(v)-1 $}
+        { $d(v) \gets d(v)-1 $} \\
         \If{ $d(v) > 0 $ } 
         {
           continue

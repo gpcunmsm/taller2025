@@ -3,20 +3,35 @@
 #include<vector>
 
 #define SIZE 10
-#define WHITE 1
-#define GRAY 2
-#define BLACK 3
+#define NOT_VISITED 1
+#define EXPLORING 2
+#define VISITED 3
 using namespace std;
 
 int AM[SIZE][SIZE];
 
+void printPaths(vector<int> &parent, int s, int v) {
+  if ( s == v ) {
+    cout << s << ", ";
+    return;
+  }
+
+  if ( parent[v] == -1 ) {
+    cout << "no path" << endl;
+    return;
+  }
+
+  printPaths(parent, s, parent[v]);
+  cout << v << ", ";
+}
+
 void bfs(int source) {
   queue<int> Q;
-  vector<int> colored(SIZE, WHITE);
+  vector<int> colored(SIZE, NOT_VISITED);
   vector<int> dist(SIZE, -1);
   vector<int> parent(SIZE, -1);
   dist[source] = 0;
-  colored[source] = GRAY;
+  colored[source] = EXPLORING;
   Q.push(source);
   while(!Q.empty()) {
     int u = Q.front();
@@ -25,14 +40,14 @@ void bfs(int source) {
       if ( AM[u][i] == 0 ) continue;
       int v = i;
       cout << " adj v: " << v << endl;
-      if( colored[v] == WHITE ) { // no visitado aun
+      if( colored[v] == NOT_VISITED ) { // no visitado aun
         dist[v] = dist[u] + 1;
         parent[v] = u;
-        colored[v] = GRAY;
+        colored[v] = EXPLORING;
         cout << " adding to the queue: " << v << endl;
         Q.push(v);
       }
-      colored[u] = BLACK;
+      colored[u] = VISITED;
     }
     Q.pop();
   }
@@ -48,6 +63,15 @@ void bfs(int source) {
 
   cout << "parents : ";
   for(int i=0; i<SIZE; i++) cout << "("<< i << ":" << parent[i] << ") " ;
+  cout << endl;
+
+
+  cout << "printing path" << endl;
+  printPaths(parent, source, 7);
+  cout << endl;
+  printPaths(parent, source, 3);
+  cout << endl;
+  printPaths(parent, source, 9);
   cout << endl;
 }
 
