@@ -1,0 +1,171 @@
+\documentclass[]{beamer}
+%\documentclass[notes]{beamer}       % print frame + notes
+%\documentclass[notes=only]{beamer}   % only notes
+%\documentclass{beamer}              % only frames
+%\documentclass[handout]{beamer}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{algorithm2e}
+
+\usetheme{Dresden}%%%%% developer's preference - may change based on preferences
+
+%%%%%% UMass official color: https://www.umass.edu/brand/elements/color
+\definecolor{UMassAmherst}{rgb}{0.533 0.11 0.11}
+\usecolortheme[named=UMassAmherst]{structure}
+
+\title{Grafos\\Minimum Spanning Tree \& Shortest Paths}
+\author{MSc Edson Ticona Zegarra}
+\institute{Taller avanzado 2025}
+\date{}
+
+%%%%%% obtained from: https://www.umass.edu/brand/elements/wordmarks-seal-and-spirit-marks
+%%%%%% logos of other departments can also be obtained from the above link. Otherwise, consult your department website.
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Contenido}
+\tableofcontents
+\end{frame}
+
+\section{Minimum Spanning Tree}
+\begin{frame}{Contenido}
+\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}{Grafo de expansi\'on}
+  \begin{itemize}
+    \item Dado un grafo $G=(V,E)$ y un subgrafo $G'=(V',E')$, tal que $G' \subset G$, se dice que $G'$ es un subgrafo de expansi\'on si todos los v\'ertices de $V'$ se expanden a todo $G$, es decir si $V'=V$
+      \pause
+    \item Llamamos a un grafo $G$ de \textit{edge-maximal} con cierta propiedad si $G$ cumple con la propiedad pero el grafo $G+xy$ no, para cualquier par de v\'ertices $x, y \in G$
+      \pause
+    \item En general hablamos de \textit{maximal} o \textit{minimal} con cierta propiedad, se refiere a la relaci\'on de subgrafo
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\'Arbol de expansi\'on m\'inimo}
+  \begin{itemize}
+    \item Llamamos de \'arbol de expansi\'on a todo subgrafo $T \in G$ tal que $T$ es un \'arbol y $T$ es un subgrafo de expansi\'on
+      \pause
+    \item Para un grafo con pesos, entre todos los posibles \'arboles de expansi\'on, se llama a $T$ de \'arbol de expansi\'on m\'inimo si la suma de los pesos de las aristas de $T$ es la menor de todas
+      \pause
+    \item Formalmente, $$\min \sum_{e \in E} w(e)$$
+      \pause
+    \item donde $w(e)$ representa el peso de la arista $e$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Minimum Spanning Tree (MST)}
+  \begin{itemize}
+    \item El problema del \'arbol de expansi\'on m\'inimo, en ingl\'es \textit{minimum spanning tree (MST)} admite soluci\'on por un algoritmo greedy
+      \pause
+    \item La idea es construir el MST agregando arista por arista, siempre que sea una arista \textit{segura} de peso m\'inimo
+      \pause
+    \item Una arista segura es aquella que mantiene la propiedad
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Algoritmo de Prim}
+  \begin{itemize}
+    \item El algoritmo de Prim inicia de un v\'ertice arbitrario, dicho v\'ertice provee diversas opciones en cuanto a cu\'al arista agregar a continuaci\'on
+      \pause
+    \item Siempre se agrega la menor disponible al componente creado hasta el momento
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Prim}
+  \begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{$G=(V,E)$ es el grafo}
+    \Output{$T$ es el MST}
+    %\BlankLine
+    % {$ T.push(u) $} \tcp*{$T$ es el MST, nodo $u$ arbitrario}
+    { $ Q.insert(V) $ }
+    \For{$ v \in V $}
+    {
+      \If{$e.isSafe()$}
+      {
+        {$ T.push(e)  $}
+      }
+    }
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Prim}
+  \begin{itemize}
+    \item Complejidad $O()$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Algoritmo de Kruskal}
+  \begin{itemize}
+    \item El algoritmo de Kruskal inicia por la arista de menor peso
+      \pause
+    \item Se continue con la siguiente arista de menor peso, si dicha arista no pertenece al mismo componente se crea otro componente
+      \pause
+    \item Eventualmente una arista va a unir un par de componentes desconectados
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Kruskal}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$G$ es el grafo y $x$ el v\'ertice buscado.}
+    %\Output{$0$ si $x \in V$, $1$ caso contrario}
+    %\BlankLine
+    {$Sort(E)$} \\
+    \For{$ e \in E $}
+    {
+      \If{$e.isSafe()$}
+      {
+        {$ T.push(e)  $}
+      }
+      { $toVisit.pop()$ }
+    }
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Kruskal}
+  \begin{itemize}
+    \item Complejidad $O()$
+  \end{itemize}
+\end{frame}
+
+\subsection{Union-Find Disjoint Sets}
+\begin{frame}{Conjuntos Disjuntos}
+  \begin{itemize}
+    \item Estructura de datos para manejar conjuntos disjuntos de manera eficiente
+      \pause
+    \item 
+  \end{itemize}
+\end{frame}
+
+\section{Caminos m\'inimos}
+\begin{frame}{Caminos m\'inimos}
+  \begin{itemize}
+    \item Dado un grafo con pesos, se busca minimizar la suma de los pesos de las aristas del camino entre $s$ y $t$
+      \pause
+    \item Formalmente, $$ \min \sum_{e \in P} w(e)$$
+      \pause
+    \item Tal que $P$ es un camino entre $s$ y $t$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Relajaci\'on}
+  \begin{itemize}
+    \item Dadar la relajaci\'on
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Algoritmo de Bellman-Ford}
+  \begin{itemize}
+    \item Dado un grafo con pesos, se busca minimizar la suma de los pesos de las aristas del camino entre $s$ y $t$
+      \pause
+    \item Formalmente, $$ \min \sum_{e \in P} w(e)$$
+      \pause
+    \item Tal que $P$ es un camino entre $s$ y $t$
+  \end{itemize}
+\end{frame}
+
+\end{document}
