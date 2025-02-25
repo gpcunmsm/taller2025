@@ -100,6 +100,16 @@
   \end{itemize}
 \end{frame}
 
+\begin{frame}{Cortes}
+  \begin{itemize}
+    \item Dado un conjunto $V$, hacer una \textit{partici\'on} de $V$ es agrupar sus elementos en subconjuntos no vacios tal que todo elemento est\'a incluido exactamente en un subconjunto
+      \pause
+    \item Si $V_1$ y $V_2$ es una partici\'on de $V$, el conjunto de aristas que van de $V_1$ a $V_2$ se conoce como un \textit{corte}
+      \pause
+    \item Note que si $V_1 = { v }$, entonces el corte es denotado por $E(v)$
+  \end{itemize}
+\end{frame}
+
 \section{Representaci\'on de grafos}
 \begin{frame}{Representaci\'on de grafos}
   \begin{itemize}
@@ -107,7 +117,7 @@
       \pause
     \item Lista de adyacencia: \texttt{vector<vector<pair<int,int>> al}. Cada par guarda el \'indice y el peso de la arista
       \pause
-    \item Lista de aristas: \texttt{vector<tuple<int, int, in>> el}. Cada tupla guarda el peso, y las aristas
+    \item Lista de aristas: \texttt{vector<tuple<int, int, int>> el}. Cada tupla guarda el peso, y las aristas
   \end{itemize}
 \end{frame}
 

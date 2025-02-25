@@ -81,12 +81,15 @@
     \Output{$T$ es el MST}
     %\BlankLine
     % {$ T.push(u) $} \tcp*{$T$ es el MST, nodo $u$ arbitrario}
-    { $ Q.insert(V) $ }
-    \For{$ v \in V $}
+    $ Q.insert(e) $ \tcp*{Q cola de prioridades en base al peso}
+    \While{$ ! Q.empty()  $}
     {
-      \If{$e.isSafe()$}
+      {$e \gets Q.top()$} \\
+      \tcp{$e$ es seguro si no crea ciclos}
+      \If{$e.isSafe()$} 
       {
-        {$ T.push(e)  $}
+        {$ T.push(e) $} \\
+        {$Q.push(E(e))$}
       }
     }
   \end{algorithm}
@@ -94,7 +97,7 @@
 
 \begin{frame}{Prim}
   \begin{itemize}
-    \item Complejidad $O()$
+    \item Complejidad $O(E \log E) = O(E \log V)$
   \end{itemize}
 \end{frame}
 
@@ -105,39 +108,103 @@
     \item Se continue con la siguiente arista de menor peso, si dicha arista no pertenece al mismo componente se crea otro componente
       \pause
     \item Eventualmente una arista va a unir un par de componentes desconectados
+      \pause
+    \item Si una arista crea un ciclo es ignorada
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Kruskal}
   \begin{algorithm}[H]
-    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
-    %\Input{$G$ es el grafo y $x$ el v\'ertice buscado.}
-    %\Output{$0$ si $x \in V$, $1$ caso contrario}
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{$G=(V,E)$ es el grafo}
+    \Output{$T$ es el MST}
     %\BlankLine
     {$Sort(E)$} \\
     \For{$ e \in E $}
     {
-      \If{$e.isSafe()$}
+      \If{$FindSet(e.u) != FindSet(e.v)$}
       {
-        {$ T.push(e)  $}
+        {$ T.push(e)$} \\
+        {$ Union(e.u, e.v)$ }
       }
-      { $toVisit.pop()$ }
     }
   \end{algorithm}
 \end{frame}
 
 \begin{frame}{Kruskal}
   \begin{itemize}
-    \item Complejidad $O()$
+    \item Complejidad $O(E \log V)$
+      \pause
+    \item Igual que Prim
   \end{itemize}
 \end{frame}
 
 \subsection{Union-Find Disjoint Sets}
 \begin{frame}{Conjuntos Disjuntos}
   \begin{itemize}
+    \item En un \textit{conjunto} no hay elementos repetidos
+      \pause
+    \item \textit{Conjuntos disjuntos} es un grupo de conjuntos sin elementos en com\'un
+      \pause
     \item Estructura de datos para manejar conjuntos disjuntos de manera eficiente
       \pause
-    \item 
+    \item Para el prop\'osito de Kruskal necesitamos dos operaciones b\'asicas: \texttt{FindSet} y \texttt{Union}
+      \pause
+    \item El objetivo es poder determinar, de manera eficiente, a que conjunto pertenece cierto elemento y unir dos conjuntos
+      \pause
+    \item La implementaci\'on trivial se puede hacer con arreglos, una implementaci\'on m\'as eficiente puede ser con \'arboles
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Conjuntos Disjuntos: \texttt{FindSet}}
+  \begin{itemize}
+    \item Cada conjunto tiene un elemento \textit{representativo}
+      \pause
+    \item Dado un elemento $x$, la idea es saber a cu\'al conjunto pertenece, es decir, hallar su elemento representativo
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Conjuntos Disjuntos: \texttt{Union}}
+  \begin{itemize}
+    \item Al unir dos conjuntos, todos los elementos de ambos conjuntos terminan con el mismo elemento representativo
+      \pause
+    \item Para optimizar esta operaci\'on se utiliza el \textit{rank} y solo tiene uso cuando se utiliza una representaci\'on de \'arbol
+      \pause
+    \item El \textit{rank} mide la altura (l\'imite superior) del \'arbol de cada conjunto
+      \pause
+    \item Dos \textit{heu\'risticas} son conocidas: \textit{union by rank} y \textit{path compression}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Conjuntos Disjuntos: heur\'isticas}
+  \begin{itemize}
+    \item \textit{union by rank} hace que al unir dos conjuntos, el de menor rango apunte a aquel con mayor rango
+      \pause
+    \item \textit{path compression} hace que cada nodo apunte directamente al nodo ra\'iz
+  \end{itemize}
+\end{frame}
+
+%\begin{frame}{Conjuntos Disjuntos: heur\'isticas}
+%  \begin{algorithm}[H]
+%    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+%    %\Input{$G=(V,E)$ es el grafo}
+%    %\Output{$T$ es el MST}
+%    %\BlankLine
+%    %\caption{Find Set}\label{alg:findset}
+%    \If{$x != x.p$}
+%    {
+%      \State{ $x.p \gets FindSet(x.p)$}
+%    }
+%    \KwReturn{$x.p$}
+%  \end{algorithm}
+%\end{frame}
+
+\subsection{Comparaci\'on}
+\begin{frame}{Comparaci\'on}
+  \begin{itemize}
+    \item abd
+      \pause
+    \item cd
   \end{itemize}
 \end{frame}
 
