@@ -97,6 +97,31 @@
   \end{itemize}
 \end{frame}
 
+\begin{frame}{Backtracking}
+  \begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{$s$ solucion parcial}
+    %\Output{$S$ conjunto m\'aximo de intervalos}
+    \BlankLine
+    \If{\textsc{NotViable}$(s)$}
+    {
+      \Return
+    }
+    \If{\textsc{IsSolution}$(s)$}
+    {
+      \textsc{Save}$(s)$ 
+      \tcc*{limpiar el estado}
+      \Return
+    }
+    \For{$k \in $ \textsc{BuildSol}$(s)$}  
+    {
+      \textsc{Backtrack}$(k)$
+      \tcc*{podar si es posible}
+    }
+    % \KwRet{$S$}
+  \end{algorithm}
+\end{frame}
+
 \begin{frame}{El problema de las 8 reinas}
   \begin{definition}
     De cu\'antas formas se puede colocar 8 reinas en un tablero de ajedrez tal que ninguna de ellas amenace a otra
