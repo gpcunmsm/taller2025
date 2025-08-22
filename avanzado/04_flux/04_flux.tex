@@ -1,0 +1,203 @@
+\documentclass[]{beamer}
+%\documentclass[notes]{beamer}       % print frame + notes
+%\documentclass[notes=only]{beamer}   % only notes
+%\documentclass{beamer}              % only frames
+%\documentclass[handout]{beamer}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{algorithm2e}
+
+\usetheme{Dresden}%%%%% developer's preference - may change based on preferences
+
+%%%%%% UMass official color: https://www.umass.edu/brand/elements/color
+\definecolor{UMassAmherst}{rgb}{0.533 0.11 0.11}
+\usecolortheme[named=UMassAmherst]{structure}
+
+\title{Flujos: Network Flow}
+\author{MSc Edson Ticona Zegarra}
+\institute{Taller avanzado 2025}
+\date{}
+
+%%%%%% obtained from: https://www.umass.edu/brand/elements/wordmarks-seal-and-spirit-marks
+%%%%%% logos of other departments can also be obtained from the above link. Otherwise, consult your department website.
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Contenido}
+\tableofcontents
+\end{frame}
+
+\section{Flujos}
+\begin{frame}{Flujo M\'aximo}
+  \begin{itemize}
+    \item Dado un grafo dirigido con pesos que representan la capacidad de cada \textit{arco}, y un par de v\'ertices $s$ y $t$, de origen y de destino respectivamente, se busca hallar la mayor cantidad de volumen que puede pasar por el grafo
+      \pause
+    \item Todas las capacidades son no negativas, $c(u,v) \geq 0$ y si existe una arista $(u,v)$ entonces no existe una arista $(u,v)$
+      \pause
+    \item Para todo v\'ertice $v$, se asume que existe un camino de $s$ a $v$ y de $v$ a $t$
+      \pause
+    \item Para todo v\'ertice $v \in V$ excepto $s$ y $t$, la cantidad de flujo entrante es igual a la cantidad de flujo saliente. Es decir hay una \textbf{conservaci\'on de flujo}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Ford-Fulkerson}
+  \begin{itemize}
+    \item Es un m\'etodo gen\'erico que incrementa iterativamente el flujo, comenzando en 0
+      \pause
+    \item En cada iteraci\'on incrementa el flujo buscando un \textit{augmenting path} (``camino de aumento'') en una red residual asociada $G_f$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Ford-Fulkerson}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$d$ vector de distancias, $parent$ vector de caminos}
+    %\Output{$T$ es el MST}
+    %\BlankLine
+    \While{Exista un \textit{augmenting path} en la red residual}
+    {
+      {Aumentar el flujo}
+    }
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Grafo Residual}
+  \begin{itemize}
+    \item La red residual $G_f$ representa que tanto el flujo puede cambiar en $G$
+      \pause
+    \item Dado un arco $(u,v)$, la \textit{capacidad residual} est\'a dada por $c_f(u,v) = c(u,v) - f(u,v)$
+      \pause
+    \item Formalmente:
+      \[
+        c_f(u,v) =
+        \begin{cases}
+          \text{$c(u,v) - f(u,v)$} &\quad\text{si $(u,v) \in E$}\\
+          \text{$f(v,u)$} &\quad\text{si $(v,u) \in E$} \\
+          \text{0} &\quad\text{caso contrario.} \\
+        \end{cases}
+      \]
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Augmenting Path}
+  \begin{itemize}
+    \item Un \textit{augmenting path} es un camino desde $s$ hasta $t$ en la red residual $G_f$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Ford-Fulkerson}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$d$ vector de distancias, $parent$ vector de caminos}
+    %\Output{$T$ es el MST}
+    %\BlankLine
+    \While{Exista un \textit{augmenting path} en la red residual}
+    {
+      {$c_f(p) = min\{c_f(e): e \in p$\}} \\
+      \For{$(u,v) \in p$}
+      {
+        \If{$(u,v) \in E(G)$}
+        {
+          $(u,v).f \gets (u,v).f + c_f(p)$
+        }
+        \Else
+        {
+          $(v,u).f \gets (v,u).f - c_f(p)$
+        }
+      }
+    }
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Edmonds-Karp}
+  \begin{itemize}
+    \item Se calcula el camino m\'inimo considerando el menor n\'umero de aristas y no el peso de estas
+      \pause
+    \item Complejidad: $O(VE^2)$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Edmonds-Karp}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$d$ vector de distancias, $parent$ vector de caminos}
+    %\Output{$T$ es el MST}
+    %\BlankLine
+    \While{Exista un \textit{augmenting path} en la red residual sin considerar pesos}
+    {
+      {Aumentar el flujo}
+    }
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Algoritmo de Dinitz (Dinic)}
+  \begin{itemize}
+    \item Es similar a Edmonds-Karp pero Dinic es m\'as eficiente.
+      \pause
+    \item Se crea un grafo de niveles $G_L$ al recorrer $G_f$ con un BFS
+      \pause
+    \item En el grafo de niveles $G_L$ se busca un \textit{blocking flows} (flujos bloqueante). Un \textit{blocking flow} es aquel que no permite enviar m\'as flujo de $s$ a $t$
+      \pause
+    \item Para ello se utiliza un DFS en el grafo de niveles $G_L$
+      \pause
+    \item Complejidad: $O(V^2E)$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Dinitz}
+  \begin{algorithm}[H]
+    %\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    %\Input{$d$ vector de distancias, $parent$ vector de caminos}
+    %\Output{$T$ es el MST}
+    %\BlankLine
+    \While{Exista un \textit{augmenting path} en la red residual sin considerar pesos}
+    {
+      {$G_L \gets BFS(G_f)$}
+
+      {$f' \gets DFS(G_L)$} \tcc{blocking flow}
+      {Aumentar el flujo en $f'$}
+
+    }
+  \end{algorithm}
+\end{frame}
+
+
+\section{Teorema Max-Flow Min-Cut}
+\begin{frame}{Contenido}
+\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}{Dualidad}
+  \begin{itemize}
+    \item Cuando hablamos de problemas de optimizaci\'on, el concepto de \textit{dualidad} se\~nala que un problema puede ser entendido de dos maneras: como una maximizaci\'on o como una minimizaci\'on
+      \pause
+    \item Si existe dualidad entonces llamamos a uno de ellos como el \textit{problema primal} y al otro como el \textit{problema dual}
+      \pause
+    \item Entonces, si el problema primal es un problema de maximizaci\'on, el dual ser\'a un problema de minimizaci\'on
+      \pause
+    \item Si se dice que existe una \textit{dualidad fuerte}, entonces la soluci\'on del dual es tambi\'en la soluci\'on del primal
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Max-Flow Min-Cut}
+  \begin{itemize}
+    \item El problema del corte m\'inimo, o \textit{minimum cut} es aquel en el cual se busca una partici\'on tal que la suma de los pesos de las aristas que cortan dicha partici\'on es m\'inima
+      \pause
+    \item Formalmente, si $V_1$ y $V_2$ son particiones de $V$, entonces se busca $\min \sum_e w_e$ tal que $e =(u,v); u \in V_1$ y $v\in V_2$
+      \pause
+    \item El problema del flujo m\'aximo es el \textit{dual} del problema del corte m\'inimo, en particular existe una \textit{dualidad fuerte}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Max-Flow Min-Cut}
+  \begin{itemize}
+    \item Para hallar el corte m\'inimo, al finalizar la ejecuci\'on del algoritmo de fluxjo m\'aximo, se puede recorrer el grafo residual $G_f$ desde $s$. Todos los v\'ertices que pueden ser alcanzados desde $s$ forman parte de la primera partici\'on, los v\'ertices restantes pertenecen a la otra partici\'on
+      \pause
+    \item El valor del corte m\'inimo (suma de pesos de las aristas de van de una partici\'on a otra) es igual al valor del flujo m\'aximo
+  \end{itemize}
+\end{frame}
+
+\end{document}
