@@ -1,0 +1,236 @@
+\documentclass[]{beamer}
+%\documentclass[notes]{beamer}       % print frame + notes
+%\documentclass[notes=only]{beamer}   % only notes
+%\documentclass{beamer}              % only frames
+%\documentclass[handout]{beamer}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{algorithm2e}
+
+\usetheme{Dresden}%%%%% developer's preference - may change based on preferences
+
+%%%%%% UMass official color: https://www.umass.edu/brand/elements/color
+\definecolor{UMassAmherst}{rgb}{0.533 0.11 0.11}
+\usecolortheme[named=UMassAmherst]{structure}
+
+\title{Shortest Paths}
+\author{MSc Edson Ticona Zegarra}
+\institute{Taller avanzado 2025}
+\date{}
+
+%%%%%% obtained from: https://www.umass.edu/brand/elements/wordmarks-seal-and-spirit-marks
+%%%%%% logos of other departments can also be obtained from the above link. Otherwise, consult your department website.
+
+\begin{document}
+
+\maketitle
+
+\section{Introducci\'on}
+\begin{frame}{Contenido}
+\tableofcontents
+\end{frame}
+
+\begin{frame}{Caminos m\'inimos}
+  \begin{itemize}
+    \item Dado un grafo con pesos, se busca minimizar la suma de los pesos de las aristas del camino entre $s$ y $t$
+      \pause
+    \item Formalmente, $$ \min \sum_{e \in P} w(e)$$
+      \pause
+    \item Tal que $P$ es un camino entre $s$ y $t$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Relajaci\'on}
+  \begin{itemize}
+    \item La idea es verificar si existe una mejor opci\'on para un camino m\'inimo, de ser as\'i se utiliza tal opci\'on
+      \pause
+    \item Sea $d(u)$ la distancia hasta el v\'ertice $u$ y sea $w(u,v)$ el peso de la arista que conecta $u$ y $v$
+      \pause
+    \item Si $d(u) + w(u,v) < d(v)$ entonces el camino m\'inimo hasta $v$ puede ser mejorado usando el camino m\'inimo hasta $u$ junto con la arista que conecta $u$ y $v$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Relajaci\'on}
+  \begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{$d$ vector de distancias, $parent$ vector de caminos}
+    %\Output{$T$ es el MST}
+    %\BlankLine
+    \If{$ d(u) + w(u,v) < d(v) $}
+    {
+      {$d(v) \gets d(u) + w(u,v)$} \\
+      {$parent(v) \gets u$} \\
+    }
+  \end{algorithm}
+\end{frame}
+
+%\begin{frame}
+%  \begin{center}
+%  \begin{tikzpicture}[node distance=3cm, every node/.style={circle, draw, minimum size=1cm}, ->, thick]
+%
+%  % Nodes
+%  \node (u) {u};
+%  \node[right of=u] (v) {v};
+%
+%  % Edge with weight
+%  \draw[->] (u) -- (v) node[midway, above] {$w(u,v)$};
+%
+%  % Distances
+%  \node[below of=u, yshift=0.5cm, draw=none] (du) {$\text{dist}[u] = 3$};
+%  \node[below of=v, yshift=0.5cm, draw=none] (dv) {$\text{dist}[v] = 10$};
+%
+%  % Relaxation condition
+%  \node[below of=u, xshift=1.5cm, draw=none, text width=8cm, align=center] (relax) {
+%  \textbf{Relaxation:} \\
+%  If $\text{dist}[u] + w(u,v) < \text{dist}[v]$ \\
+%  Then update: $\text{dist}[v] = \text{dist}[u] + w(u,v)$
+%  };
+%
+%  \end{tikzpicture}
+%  \end{center}
+%\end{frame}
+
+\section{Single Source Shortest Path}
+\begin{frame}{Algoritmo de Bellman-Ford}
+  \begin{itemize}
+    \item Este algoritmo resuelve el caso de una fuente \'unica al resto de los v\'ertices del grafo (Single Source Shortest Path SSSP)
+      \pause
+    \item Inicialmente el vector de distancia toma valores de infinito
+      \pause
+    \item La idea es relajar todas las $|E|$ aristas $|V|-1$ veces
+      \pause
+    \item Pueden existir pesos negativos
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Algoritmo de Bellman-Ford}
+  \begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{$G$ grafo con pesos y $s$ v\'ertices inicial}
+    \Output{$true$ si no hay ciclos negativos}
+    \textsc{Init}$(d,s)$
+    \tcc*{distancia 0 para $s$ e $\infty$ al resto}
+    \For{$v \in V$}
+    {
+      \For{$e \in E$}
+      {
+        \textsc{Relax}$(u,v,w)$
+      }
+    }
+    \For{$e \in E$}
+    {
+      \If{$d(v) > d(u) + w(u,v)$}
+      {
+        \Return{false}
+      }
+    }
+    \Return{true}
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Algoritmo de Bellman-Ford}
+  \begin{itemize}
+    \item Complejidad: $O(EV)$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Algoritmo de Dijkstra}
+  \begin{itemize}
+    \item Requiere pesos no negativos
+      \pause
+    \item Mejor complejidad que Berllman-Ford
+      \pause
+    \item Se mantiene una cola de priodad en funci\'on a la distancia
+      \pause
+    \item Se va relajando los v\'ertices conforme se va avanzando en la cola de prioridades
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Algoritmo de Dijkstra}
+  \begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{$G$ grafo con pesos}
+    \Output{$d$ con todas las distancias}
+    \textsc{Init}$(d,s)$
+    \tcc*{distancia 0 para $s$ e $\infty$ al resto}
+    $Q.push(v \in V)$
+    \tcc*{en funcion de la distancia}
+
+    \While{$! Q.empty() $}
+    {
+      {$u \gets Q.top()$}
+
+      \For{$v \in G(u)$}
+      {
+        \textsc{Relax}$(u,v,w)$
+      }
+    }
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Algoritmo de Dijkstra}
+  \begin{itemize}
+    \item Complejidad: $O(E + V \log V)$
+  \end{itemize}
+\end{frame}
+
+\section{All Pairs Shortest Paths}
+\begin{frame}{Algoritm de Floyd-Warshall}
+\end{frame}
+
+\begin{frame}{All Pairs Shortest Paths}
+  \begin{itemize}
+    \item Estos algoritmo encuentan las distancias m\'inimas entre todos los pares de v\'ertices
+      \pause
+    \item A diferencia de los anterior que encuentran la distancia m\'inima entre un v\'ertice origen $s$ y el resto de v\'ertices
+      \pause
+    \item Este problema es una generalizaci\'on y los algoritmos son m\'as lentos
+      \pause
+    \item La soluci\'on suele ser una matriz cuadrada $\pi$ de $n \times n$ , tal que $\pi_{uv}$ denota la distancia m\'inima entre el v\'ertice $u$ y el v\'ertice $v$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Algoritm de Floyd-Warshall}
+  \begin{itemize}
+    \item El algoritmo de Floyd-Warshall considera pesos negativos pero no ciclos negativos
+      \pause
+    \item Algoritmo de programaci\'on din\'amica
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Algoritmo de Bellman-Ford}
+  \begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{$G$ grafo con pesos y $s$ v\'ertices inicial}
+    \Output{$di$ matriz de distancias}
+    \For{$k \in |V|$}
+    {
+      \For{$u \in |V|$}
+      {
+        \For{$v \in |V|$}
+        {
+          $d[u][v] = \min(d[u][v], d[u][k]+d[k][v])$
+        }
+      }
+    }
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Algoritm de Floyd-Warshall}
+  \begin{itemize}
+    \item Complejidad: $O(V^3)$
+  \end{itemize}
+\end{frame}
+
+\section{Resumen}
+\begin{frame}{Comparaci\'on}
+  \begin{tabular}{l|l|l|l}
+    Algoritmo      & Caso & Observaci\'on          & Complejidad \\ \hline
+    BFS            & SSSP & sin pesos              & $O(V+E) $ \\
+    Bellman-Ford   & SSSP & pesos negativos        & $O(VE)$ \\
+    Dijkstra       & SSSP & pesos positivos        & $O((V+E) \log V)$\\
+    Floyd-Warshall & APSP & Para grafos peque\~nos & $O(V^3)$ 
+  \end{tabular}
+\end{frame}
+
+\end{document}
