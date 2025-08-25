@@ -200,4 +200,32 @@
   \end{itemize}
 \end{frame}
 
+\section{Emparejamiento m\'aximo bipartito}
+\begin{frame}{Contenido}
+\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}{Emparejamiento}
+  \begin{itemize}
+    \item Se conoce como \textit{emparejamiento} o \textit{matching} a un conjunto $M \subseteq E$ tal que las aristas de $M$ no son adyacentes entre s\'i, es decir, no comparten ning\'un v\'ertice
+      \pause
+    \item Un \textit{emparejamiento m\'aximo} o \textit{maximum matching} es un matching de cardinalidad m\'axima
+      \pause
+    \item Para un grafo bipartito podemos decir que $V=L\cup R$, donde $L$ y $R$ son disjuntos, es decir, son particiones de $V$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Emparejamiento m\'aximo bipartito}
+  \begin{itemize}
+    \item Para un grafo bipartito $G=(L\cup R, E)$ se puede utilizar el problema de flujo m\'aximo para hallar un emparejamiento m\'aximo
+      \pause
+    \item Se agregan 2 v\'ertices nuevos $s, t$, tal que conectamos $s$ con todos los v\'ertices de $L$ y $t$ con todos los v\'ertices de $R$
+      \pause
+    \item Las capacidades de las aristas se fijan en 1 unidad.
+      \pause
+    \item Al correr un algoritmo de flujo m\'aximo, las aristas con capacidad residual 0 en el grafo residual $G_f$ son aquellas que conforman el emparejamiento m\'aximo
+  \end{itemize}
+\end{frame}
+
+
 \end{document}
